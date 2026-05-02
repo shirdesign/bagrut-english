@@ -183,7 +183,7 @@ function MCInner() {
 
       <div className="card p-6 sm:p-8 text-center">
         <div className="text-xs text-slate-400 uppercase tracking-wider">
-          {q.word.pos} · יחידה B{q.word.unit}
+          {q.word.pos} · {q.word.unit <= 6 ? `יחידה B${q.word.unit}` : `Band ${["A","B","C","C+","D"][q.word.unit - 7] || q.word.unit}`}
         </div>
         <div className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2">
           {question}

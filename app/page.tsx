@@ -152,29 +152,37 @@ function DashboardInner() {
         {/* Units */}
         <section>
           <h2 className="text-xl font-bold text-slate-900 mb-3 px-1">
-            יחידות (B1-B6)
+            יחידות
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {unitStats.map((u) => (
-              <div
-                key={u.unit}
-                className="card p-4 text-center"
-              >
-                <div className="text-xs text-slate-500">יחידה</div>
-                <div className="text-2xl font-bold text-primary-700">B{u.unit}</div>
-                <div className="text-sm mt-1 text-slate-700">
-                  {u.known}/{u.total}
+            {unitStats.map((u) => {
+              // Units 1-6 = רשימת המורה (B1-B6); 7-11 = משרד החינוך (Band A-D)
+              const labelTop =
+                u.unit <= 6 ? "יחידה" : "Band";
+              const labelMain =
+                u.unit <= 6
+                  ? `B${u.unit}`
+                  : ["A", "B", "C", "C+", "D"][u.unit - 7] || `${u.unit}`;
+              return (
+                <div key={u.unit} className="card p-4 text-center">
+                  <div className="text-xs text-slate-500">{labelTop}</div>
+                  <div className="text-2xl font-bold text-primary-700">
+                    {labelMain}
+                  </div>
+                  <div className="text-sm mt-1 text-slate-700">
+                    {u.known}/{u.total}
+                  </div>
+                  <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
+                    <div
+                      className="h-full bg-primary-500"
+                      style={{
+                        width: `${u.total ? Math.round((u.known / u.total) * 100) : 0}%`,
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
-                  <div
-                    className="h-full bg-primary-500"
-                    style={{
-                      width: `${u.total ? Math.round((u.known / u.total) * 100) : 0}%`,
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       </main>

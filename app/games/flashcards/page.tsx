@@ -154,11 +154,14 @@ function FlashcardsInner() {
         className="flip-card h-72 sm:h-80 cursor-pointer"
         onClick={() => setFlipped((f) => !f)}
       >
-        <div className={`flip-card-inner ${flipped ? "flipped" : ""}`}>
+        <div
+          key={current.id}
+          className={`flip-card-inner ${flipped ? "flipped" : ""}`}
+        >
           {/* FRONT - English */}
           <div className="flip-card-face card flex flex-col items-center justify-center p-6 text-center">
             <div className="text-xs uppercase tracking-wider text-slate-400 mb-2">
-              {current.pos} · יחידה B{current.unit}
+              {current.pos} · {current.unit <= 6 ? `יחידה B${current.unit}` : `Band ${["A","B","C","C+","D"][current.unit - 7] || current.unit}`}
             </div>
             <div className="text-4xl sm:text-5xl font-bold text-slate-900">
               {current.english}
