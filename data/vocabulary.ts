@@ -1,4 +1,4 @@
-import type { VocabularyWord } from "@/lib/types";
+import type { VocabularyWord, VocabSource } from "@/lib/types";
 
 /**
  * Vocabulary list for Bagrut English Module E.
@@ -965,6 +965,35 @@ export const VOCABULARY: VocabularyWord[] = [
 /** Get vocabulary filtered by level (3, 4, or 5 yehidot) */
 export function getVocabularyForLevel(level: 3 | 4 | 5): VocabularyWord[] {
   return VOCABULARY.filter((v) => v.minLevel <= level);
+}
+
+/** Filter vocabulary by source/list. Each source is a contiguous range of units. */
+export function filterBySource(
+  words: VocabularyWord[],
+  source: VocabSource
+): VocabularyWord[] {
+  switch (source) {
+    case "all":
+      return words;
+    case "teacher":
+      return words.filter((w) => w.unit >= 1 && w.unit <= 6);
+    case "band-a":
+      return words.filter((w) => w.unit === 7);
+    case "band-b":
+      return words.filter((w) => w.unit === 8);
+    case "band-c":
+      return words.filter((w) => w.unit === 9 || w.unit === 10);
+    case "band-d":
+      return words.filter((w) => w.unit === 11);
+  }
+}
+
+/** Get vocabulary for a level + selected source (list). */
+export function getVocabularyForSource(
+  level: 3 | 4 | 5,
+  source: VocabSource
+): VocabularyWord[] {
+  return filterBySource(getVocabularyForLevel(level), source);
 }
 
 /** Get vocabulary filtered by unit and level */

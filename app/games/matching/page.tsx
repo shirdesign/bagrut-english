@@ -3,7 +3,7 @@
 import Header from "@/components/Header";
 import ProfileGate from "@/components/ProfileGate";
 import { useAuth } from "@/lib/auth";
-import { getVocabularyForLevel } from "@/data/vocabulary";
+import { getVocabularyForSource } from "@/data/vocabulary";
 import { pickReviewWords } from "@/lib/spacedRepetition";
 import type { VocabularyWord } from "@/lib/types";
 import Link from "next/link";
@@ -30,7 +30,7 @@ export default function MatchingPage() {
 }
 
 function MatchingInner() {
-  const { activeProfile, recordAnswer } = useAuth();
+  const { activeProfile, recordAnswer, currentSource } = useAuth();
   const [round, setRound] = useState(0); // forces reshuffle
   const [pairs, setPairs] = useState<VocabularyWord[]>([]);
   const [enList, setEnList] = useState<VocabularyWord[]>([]);
@@ -44,8 +44,11 @@ function MatchingInner() {
   const [done, setDone] = useState(false);
 
   const all = useMemo(
-    () => (activeProfile ? getVocabularyForLevel(activeProfile.level) : []),
-    [activeProfile]
+    () =>
+      activeProfile
+        ? getVocabularyForSource(activeProfile.level, currentSource)
+        : [],
+    [activeProfile, currentSource]
   );
 
   useEffect(() => {
@@ -63,7 +66,7 @@ function MatchingInner() {
     setStats({ correct: 0, incorrect: 0 });
     setAutoKnown([]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeProfile?.id, round]);
+  }, [activeProfile?.id, round, currentSource]);
 
   // resolve a pair when both sides chosen
   useEffect(() => {

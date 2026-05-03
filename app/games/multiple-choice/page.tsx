@@ -3,7 +3,7 @@
 import Header from "@/components/Header";
 import ProfileGate from "@/components/ProfileGate";
 import { useAuth } from "@/lib/auth";
-import { getVocabularyForLevel } from "@/data/vocabulary";
+import { getVocabularyForSource } from "@/data/vocabulary";
 import { pickReviewWords } from "@/lib/spacedRepetition";
 import type { VocabularyWord } from "@/lib/types";
 import Link from "next/link";
@@ -57,7 +57,7 @@ export default function MultipleChoicePage() {
 }
 
 function MCInner() {
-  const { activeProfile, recordAnswer } = useAuth();
+  const { activeProfile, recordAnswer, currentSource } = useAuth();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [idx, setIdx] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
@@ -66,8 +66,11 @@ function MCInner() {
   const [autoKnown, setAutoKnown] = useState<string[]>([]);
 
   const all = useMemo(
-    () => (activeProfile ? getVocabularyForLevel(activeProfile.level) : []),
-    [activeProfile]
+    () =>
+      activeProfile
+        ? getVocabularyForSource(activeProfile.level, currentSource)
+        : [],
+    [activeProfile, currentSource]
   );
 
   useEffect(() => {
@@ -81,7 +84,7 @@ function MCInner() {
     setDone(false);
     setAutoKnown([]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeProfile?.id]);
+  }, [activeProfile?.id, currentSource]);
 
   if (!activeProfile) return null;
 
@@ -183,7 +186,7 @@ function MCInner() {
 
       <div className="card p-6 sm:p-8 text-center">
         <div className="text-xs text-slate-400 uppercase tracking-wider">
-          {q.word.pos} · {q.word.unit <= 6 ? `יחידה B${q.word.unit}` : `Band ${["A","B","C","C+","D"][q.word.unit - 7] || q.word.unit}`}
+          {q.word.pos} · {q.word.unit <= 6 ? `דף ${q.word.unit} (רשימת המורה)` : `Band ${["A","B","C","C+","D"][q.word.unit - 7] || q.word.unit}`}
         </div>
         <div className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2">
           {question}

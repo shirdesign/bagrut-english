@@ -3,7 +3,7 @@
 import Header from "@/components/Header";
 import ProfileGate from "@/components/ProfileGate";
 import { useAuth } from "@/lib/auth";
-import { getVocabularyForLevel } from "@/data/vocabulary";
+import { getVocabularyForSource } from "@/data/vocabulary";
 import { pickReviewWords } from "@/lib/spacedRepetition";
 import type { VocabularyWord } from "@/lib/types";
 import Link from "next/link";
@@ -21,7 +21,7 @@ export default function FlashcardsPage() {
 }
 
 function FlashcardsInner() {
-  const { activeProfile, recordAnswer } = useAuth();
+  const { activeProfile, recordAnswer, currentSource } = useAuth();
   const [queue, setQueue] = useState<VocabularyWord[]>([]);
   const [idx, setIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -30,8 +30,11 @@ function FlashcardsInner() {
   const [autoKnown, setAutoKnown] = useState<string[]>([]);
 
   const all = useMemo(
-    () => (activeProfile ? getVocabularyForLevel(activeProfile.level) : []),
-    [activeProfile]
+    () =>
+      activeProfile
+        ? getVocabularyForSource(activeProfile.level, currentSource)
+        : [],
+    [activeProfile, currentSource]
   );
 
   // build initial queue once profile is ready
@@ -51,7 +54,7 @@ function FlashcardsInner() {
     setStats({ correct: 0, incorrect: 0 });
     setAutoKnown([]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeProfile?.id]);
+  }, [activeProfile?.id, currentSource]);
 
   if (!activeProfile) return null;
 
@@ -161,7 +164,7 @@ function FlashcardsInner() {
           {/* FRONT - English */}
           <div className="flip-card-face card flex flex-col items-center justify-center p-6 text-center">
             <div className="text-xs uppercase tracking-wider text-slate-400 mb-2">
-              {current.pos} · {current.unit <= 6 ? `יחידה B${current.unit}` : `Band ${["A","B","C","C+","D"][current.unit - 7] || current.unit}`}
+              {current.pos} · {current.unit <= 6 ? `דף ${current.unit} (רשימת המורה)` : `Band ${["A","B","C","C+","D"][current.unit - 7] || current.unit}`}
             </div>
             <div className="text-4xl sm:text-5xl font-bold text-slate-900">
               {current.english}

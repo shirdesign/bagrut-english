@@ -4,7 +4,12 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import ProfileGate from "@/components/ProfileGate";
 import { useAuth } from "@/lib/auth";
-import { getVocabularyForLevel, getUnitStats } from "@/data/vocabulary";
+import {
+  getVocabularyForSource,
+  getVocabularyForLevel,
+  getUnitStats,
+} from "@/data/vocabulary";
+import { VOCAB_SOURCES } from "@/lib/types";
 
 const games = [
   {
@@ -54,25 +59,40 @@ export default function HomePage() {
 }
 
 function DashboardInner() {
-  const { activeProfile } = useAuth();
+  const { activeProfile, currentSource, setCurrentSource } = useAuth();
   if (!activeProfile) return null;
 
+  // Words available for the *current source* (what the user is studying right now)
+  const sourceWords = getVocabularyForSource(activeProfile.level, currentSource);
+  // Full pool (for the units overview at the bottom)
   const allWords = getVocabularyForLevel(activeProfile.level);
+
   const knownIds = new Set(
     Object.entries(activeProfile.progress)
       .filter(([, p]) => p.known)
       .map(([id]) => id)
   );
-  const knownCount = knownIds.size;
+  const knownInSource = sourceWords.filter((w) => knownIds.has(w.id)).length;
+  const totalInSource = sourceWords.length;
+  const wordsToLearn = totalInSource - knownInSource;
+  const progressPct = totalInSource
+    ? Math.round((knownInSource / totalInSource) * 100)
+    : 0;
   const seenCount = Object.keys(activeProfile.progress).length;
-  const totalWords = allWords.length;
-  const wordsToLearn = totalWords - knownCount;
-  const progressPct = totalWords ? Math.round((knownCount / totalWords) * 100) : 0;
 
   const unitStats = getUnitStats(activeProfile.level).map((u) => ({
     ...u,
     known: allWords.filter((w) => w.unit === u.unit && knownIds.has(w.id)).length,
   }));
+
+  const sourceCounts: Record<string, number> = {
+    teacher: allWords.filter((w) => w.unit >= 1 && w.unit <= 6).length,
+    "band-a": allWords.filter((w) => w.unit === 7).length,
+    "band-b": allWords.filter((w) => w.unit === 8).length,
+    "band-c": allWords.filter((w) => w.unit === 9 || w.unit === 10).length,
+    "band-d": allWords.filter((w) => w.unit === 11).length,
+    all: allWords.length,
+  };
 
   return (
     <>
@@ -95,9 +115,12 @@ function DashboardInner() {
           {/* Progress bar */}
           <div className="mt-5">
             <div className="flex items-center justify-between text-sm mb-2">
-              <span className="text-slate-600">התקדמות</span>
+              <span className="text-slate-600">
+                התקדמות ב-
+                {VOCAB_SOURCES.find((s) => s.id === currentSource)?.label ?? "רשימה"}
+              </span>
               <span className="font-semibold text-primary-700">
-                {knownCount}/{totalWords} מילים ({progressPct}%)
+                {knownInSource}/{totalInSource} מילים ({progressPct}%)
               </span>
             </div>
             <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
@@ -107,7 +130,7 @@ function DashboardInner() {
               />
             </div>
             <p className="text-xs text-slate-500 mt-2">
-              נשארו {wordsToLearn} מילים ללמוד · ענית על {seenCount} מילים עד עכשיו
+              נשארו {wordsToLearn} מילים ברשימה הזו · ענית על {seenCount} מילים בסך הכל
             </p>
           </div>
 
@@ -118,6 +141,46 @@ function DashboardInner() {
               value={`${activeProfile.stats.totalCorrect}/${activeProfile.stats.totalAnswered || 0}`}
             />
             <Stat label="ימים רצופים" value={activeProfile.stats.streakDays} emoji="🔥" />
+          </div>
+        </section>
+
+        {/* Source / list selector */}
+        <section>
+          <h2 className="text-xl font-bold text-slate-900 mb-3 px-1">
+            מאיזו רשימה ללמוד?
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+            {VOCAB_SOURCES.map((src) => {
+              const count = sourceCounts[src.id] ?? 0;
+              const active = currentSource === src.id;
+              const disabled = count === 0;
+              return (
+                <button
+                  key={src.id}
+                  onClick={() => !disabled && setCurrentSource(src.id)}
+                  disabled={disabled}
+                  className={`p-3 rounded-2xl text-right transition border ${
+                    active
+                      ? "bg-primary-600 text-white border-primary-600 shadow-md"
+                      : disabled
+                      ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
+                      : "bg-white text-slate-800 border-slate-200 hover:border-primary-300 hover:shadow"
+                  }`}
+                >
+                  <div className="text-xl">{src.emoji}</div>
+                  <div className="font-bold text-sm leading-tight mt-1">
+                    {src.label}
+                  </div>
+                  <div
+                    className={`text-xs mt-1 ${
+                      active ? "text-primary-100" : "text-slate-500"
+                    }`}
+                  >
+                    {count} מילים
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </section>
 
@@ -156,18 +219,26 @@ function DashboardInner() {
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {unitStats.map((u) => {
-              // Units 1-6 = רשימת המורה (B1-B6); 7-11 = משרד החינוך (Band A-D)
-              const labelTop =
-                u.unit <= 6 ? "יחידה" : "Band";
-              const labelMain =
+              // Units 1-6 = רשימת המורה (PDF, מאורגנת לפי דפים)
+              // 7-11 = משרד החינוך (Band A-D)
+              const teacherLabels: Record<number, { top: string; main: string }> = {
+                1: { top: "דף 1", main: "A1-A3" },
+                2: { top: "דף 2", main: "A4-A6" },
+                3: { top: "דף 3", main: "B1-B3" },
+                4: { top: "דף 4", main: "B4-B6" },
+                5: { top: "דף 5", main: "extra" },
+                6: { top: "דף 6", main: "extra" },
+              };
+              const ministryLabels = ["A", "B", "C", "C+", "D"];
+              const label =
                 u.unit <= 6
-                  ? `B${u.unit}`
-                  : ["A", "B", "C", "C+", "D"][u.unit - 7] || `${u.unit}`;
+                  ? teacherLabels[u.unit]
+                  : { top: "Band", main: ministryLabels[u.unit - 7] || `${u.unit}` };
               return (
                 <div key={u.unit} className="card p-4 text-center">
-                  <div className="text-xs text-slate-500">{labelTop}</div>
-                  <div className="text-2xl font-bold text-primary-700">
-                    {labelMain}
+                  <div className="text-xs text-slate-500">{label.top}</div>
+                  <div className="text-xl font-bold text-primary-700">
+                    {label.main}
                   </div>
                   <div className="text-sm mt-1 text-slate-700">
                     {u.known}/{u.total}

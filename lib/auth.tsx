@@ -16,7 +16,7 @@ import {
   signOut,
   type User,
 } from "firebase/auth";
-import type { Profile, WordProgress } from "./types";
+import type { Profile, WordProgress, VocabSource } from "./types";
 import {
   getActiveProfileId,
   loadProfiles,
@@ -55,7 +55,13 @@ interface AuthContextValue {
   recordAnswer: (wordId: string, correct: boolean) => Promise<WordProgress | null>;
   /** Force a word to be known/unknown */
   setWordKnown: (wordId: string, known: boolean) => Promise<void>;
+
+  /** Currently selected vocabulary source (per profile, persisted to localStorage) */
+  currentSource: VocabSource;
+  setCurrentSource: (source: VocabSource) => void;
 }
+
+const SOURCE_KEY = (profileId: string) => `bagrut_source_${profileId}`;
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -64,6 +70,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [currentSource, setCurrentSourceState] = useState<VocabSource>("teacher");
+
+  // Load saved source whenever active profile changes
+  useEffect(() => {
+    if (!activeId || typeof window === "undefined") return;
+    const saved = window.localStorage.getItem(SOURCE_KEY(activeId));
+    if (saved) {
+      setCurrentSourceState(saved as VocabSource);
+    } else {
+      setCurrentSourceState("teacher"); // default for new profiles
+    }
+  }, [activeId]);
+
+  const setCurrentSource = (source: VocabSource) => {
+    setCurrentSourceState(source);
+    if (activeId && typeof window !== "undefined") {
+      window.localStorage.setItem(SOURCE_KEY(activeId), source);
+    }
+  };
 
   useEffect(() => {
     if (isFirebaseConfigured) {
@@ -204,8 +229,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await saveProfile(user?.uid ?? null, newProfile);
         setProfiles((prev) => prev.map((x) => (x.id === newProfile.id ? newProfile : x)));
       },
+
+      currentSource,
+      setCurrentSource,
     };
-  }, [user, ready, profiles, activeId, activeProfile]);
+  }, [user, ready, profiles, activeId, activeProfile, currentSource]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

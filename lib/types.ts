@@ -100,3 +100,21 @@ export type GameType =
   | "matching"
   | "completion"
   | "reading";
+
+/** Vocabulary source/list selector */
+export type VocabSource =
+  | "all"        // כל המילים
+  | "teacher"    // רשימת המורה (יחידות B1-B6)
+  | "band-a"     // משרד החינוך — Band A
+  | "band-b"     // משרד החינוך — Band B
+  | "band-c"     // משרד החינוך — Band C
+  | "band-d";    // משרד החינוך — Band D
+
+export const VOCAB_SOURCES: { id: VocabSource; label: string; emoji: string }[] = [
+  { id: "teacher", label: "רשימת המורה (A1-A6 + B1-B6)", emoji: "📘" },
+  { id: "band-a", label: "Band A — בסיס", emoji: "🅰️" },
+  { id: "band-b", label: "Band B — בסיס+", emoji: "🅱️" },
+  { id: "band-c", label: "Band C — מתקדם", emoji: "🇨" },
+  { id: "band-d", label: "Band D — מתקדם+", emoji: "🇩" },
+  { id: "all", label: "כל המילים", emoji: "🌐" },
+];
