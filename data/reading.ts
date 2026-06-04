@@ -266,6 +266,57 @@ Despite this knowledge, modern life often interferes with healthy sleep. Bright 
       },
     ],
   },
+  {
+    id: "r-uni-1",
+    title: "How to Read an Academic Article (אנסין)",
+    level: 6,
+    text: `University students read many academic articles, and at first this can feel difficult. However, there is a method that makes the process much easier. The key idea is that you do not have to read every word from start to finish.
+
+A good first step is to read the abstract. The abstract is a short summary at the beginning of the article. It tells you the main question of the research, the method the writers used, and the most important results. After the abstract, look at the headings and any charts. This gives you a general approach to the text before you read the details.
+
+The next step is to find the writer's main argument. Academic writers usually state their main point clearly, often at the end of the introduction. When you know the argument, the rest of the article is easier to follow, because every paragraph adds evidence to support that point.
+
+Finally, do not assume that you must agree with everything. Good readers ask questions: Is the evidence strong? Could there be another explanation? This kind of careful, active reading is a significant part of success at university, and it develops with practice.`,
+    questions: [
+      {
+        q: "According to the passage, what should you read first?",
+        options: ["The conclusion", "The abstract", "The charts", "The references"],
+        answer: 1,
+        explanation: "The text says 'A good first step is to read the abstract.'",
+      },
+      {
+        q: "Where do academic writers usually state their main argument?",
+        options: [
+          "In the title",
+          "At the end of the introduction",
+          "In the abstract only",
+          "In the last sentence of the article",
+        ],
+        answer: 1,
+      },
+      {
+        q: "What does the writer mean by 'active reading'?",
+        options: [
+          "Reading every word from start to finish",
+          "Reading quickly without stopping",
+          "Asking questions about the evidence",
+          "Reading out loud",
+        ],
+        answer: 2,
+        explanation: "Active reading means asking questions, e.g. 'Is the evidence strong?'",
+      },
+      {
+        q: "What is the main purpose of the passage?",
+        options: [
+          "To explain a useful method for reading academic articles",
+          "To describe how articles are written",
+          "To compare universities",
+          "To argue that reading is not important",
+        ],
+        answer: 0,
+      },
+    ],
+  },
 ];
 
 export const SENTENCE_COMPLETIONS: SentenceCompletion[] = [
@@ -428,5 +479,55 @@ export const SENTENCE_COMPLETIONS: SentenceCompletion[] = [
     distractors: ["distance", "discovery", "decision"],
     hint: "דיון",
     minLevel: 4,
+  },
+
+  // ===== אוניברסיטה — אנגלית בסיסי אקדמית (minLevel 6) =====
+  {
+    id: "u-s1",
+    sentence: "The scientists will __ the data before writing the report.",
+    answer: "analyze",
+    distractors: ["assume", "argue", "occur"],
+    hint: "לנתח",
+    minLevel: 6,
+  },
+  {
+    id: "u-s2",
+    sentence: "There is strong __ that the new method works.",
+    answer: "evidence",
+    distractors: ["theory", "source", "factor"],
+    hint: "ראיות",
+    minLevel: 6,
+  },
+  {
+    id: "u-s3",
+    sentence: "The difference between the two groups was __.",
+    answer: "significant",
+    distractors: ["previous", "common", "average"],
+    hint: "משמעותי",
+    minLevel: 6,
+  },
+  {
+    id: "u-s4",
+    sentence: "This course will __ a lot of independent reading.",
+    answer: "require",
+    distractors: ["define", "develop", "occur"],
+    hint: "לדרוש",
+    minLevel: 6,
+  },
+  {
+    id: "u-s5",
+    sentence: "Always check the __ of the information you use in an essay.",
+    answer: "source",
+    distractors: ["result", "process", "factor"],
+    hint: "מקור",
+    minLevel: 6,
+  },
+  {
+    id: "u-s6",
+    sentence: "The author __ that more research is needed.",
+    answer: "argues",
+    distractors: ["assumes", "defines", "occurs"],
+    hint: "טוען",
+    minLevel: 6,
   },
 ];

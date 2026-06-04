@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { useRouter } from "next/navigation";
+import { levelBadge } from "@/lib/types";
 
 export default function Header() {
   const { activeProfile, signOutAll, user } = useAuth();
@@ -44,8 +45,8 @@ export default function Header() {
               <span className="font-medium hidden sm:inline">
                 {activeProfile.name}
               </span>
-              <span className="text-xs bg-white px-2 py-0.5 rounded-full">
-                {activeProfile.level}
+              <span className="text-xs bg-white px-2 py-0.5 rounded-full whitespace-nowrap">
+                {levelBadge(activeProfile.level)}
               </span>
             </button>
             <button

@@ -1,4 +1,4 @@
-import type { VocabularyWord, VocabSource } from "@/lib/types";
+import type { VocabularyWord, VocabSource, Level } from "@/lib/types";
 
 /**
  * Vocabulary list for Bagrut English Module E.
@@ -16,7 +16,7 @@ const w = (
   hebrew: string,
   pos: VocabularyWord["pos"],
   unit: number,
-  minLevel: 3 | 4 | 5,
+  minLevel: Level,
   example?: string,
   exampleHe?: string
 ): VocabularyWord => ({ id, english, hebrew, pos, unit, minLevel, example, exampleHe });
@@ -960,10 +960,34 @@ export const VOCABULARY: VocabularyWord[] = [
   w("d-130", "step on/in sth", "לדרוך על / ב-", "phrase", 11, 5),
   w("d-131", "take sb out or take out sb", "להוציא (לבילוי)", "phrase", 11, 5),
   w("d-132", "tie sb/sth up or tie up sb/sth", "לקשור / לאסור", "phrase", 11, 5),
+
+  // ============== UNIT 12 — אנגלית בסיסי לאוניברסיטה (UNIVERSITY) ==============
+  // 100 המילים למבחן. minLevel 6 => מופיעות רק במסלול האוניברסיטה (לא מתערבבות בבגרות).
+  // מילות פתיחה נפוצות באנגלית אקדמית בסיסית; רשימת 100 המילים מהצילום תיכנס כאן.
+  w("uni-001", "research", "מחקר", "n", 12, 6, "The research took three years to complete.", "המחקר ארך שלוש שנים."),
+  w("uni-002", "data", "נתונים", "n", 12, 6, "The data shows a clear trend.", "הנתונים מראים מגמה ברורה."),
+  w("uni-003", "analyze", "לנתח", "v", 12, 6, "We need to analyze the results.", "עלינו לנתח את התוצאות."),
+  w("uni-004", "theory", "תיאוריה", "n", 12, 6, "Her theory explains the experiment.", "התיאוריה שלה מסבירה את הניסוי."),
+  w("uni-005", "method", "שיטה", "n", 12, 6, "This method is widely used.", "השיטה הזו בשימוש נרחב."),
+  w("uni-006", "evidence", "ראיות, עדות", "n", 12, 6, "There is strong evidence for the claim.", "יש ראיות חזקות לטענה."),
+  w("uni-007", "approach", "גישה", "n", 12, 6, "Scientists use a careful approach.", "מדענים נוקטים בגישה זהירה."),
+  w("uni-008", "concept", "מושג", "n", 12, 6, "This is a difficult concept.", "זהו מושג קשה."),
+  w("uni-009", "significant", "משמעותי", "adj", 12, 6, "The difference is significant.", "ההבדל משמעותי."),
+  w("uni-010", "require", "לדרוש, להצריך", "v", 12, 6, "The course requires hard work.", "הקורס דורש עבודה קשה."),
+  w("uni-011", "result", "תוצאה", "n", 12, 6, "The results were surprising.", "התוצאות היו מפתיעות."),
+  w("uni-012", "process", "תהליך", "n", 12, 6, "Learning is a slow process.", "למידה היא תהליך איטי."),
+  w("uni-013", "develop", "לפתח", "v", 12, 6, "They developed a new model.", "הם פיתחו מודל חדש."),
+  w("uni-014", "factor", "גורם", "n", 12, 6, "Cost is an important factor.", "העלות היא גורם חשוב."),
+  w("uni-015", "source", "מקור", "n", 12, 6, "Always check your sources.", "תמיד בדוק את המקורות שלך."),
+  w("uni-016", "argue", "לטעון, להתווכח", "v", 12, 6, "The author argues that change is needed.", "המחבר טוען ששינוי נחוץ."),
+  w("uni-017", "assume", "להניח", "v", 12, 6, "We cannot assume the answer.", "אי אפשר להניח את התשובה."),
+  w("uni-018", "define", "להגדיר", "v", 12, 6, "First, define the problem.", "ראשית, הגדר את הבעיה."),
+  w("uni-019", "occur", "להתרחש, לקרות", "v", 12, 6, "The reaction occurs quickly.", "התגובה מתרחשת במהירות."),
+  w("uni-020", "previous", "קודם", "adj", 12, 6, "See the previous chapter.", "ראה את הפרק הקודם."),
 ];
 
-/** Get vocabulary filtered by level (3, 4, or 5 yehidot) */
-export function getVocabularyForLevel(level: 3 | 4 | 5): VocabularyWord[] {
+/** Get vocabulary filtered by level (3/4/5 yehidot, or 6 = university). */
+export function getVocabularyForLevel(level: Level): VocabularyWord[] {
   return VOCABULARY.filter((v) => v.minLevel <= level);
 }
 
@@ -985,26 +1009,28 @@ export function filterBySource(
       return words.filter((w) => w.unit === 9 || w.unit === 10);
     case "band-d":
       return words.filter((w) => w.unit === 11);
+    case "university":
+      return words.filter((w) => w.unit === 12);
   }
 }
 
 /** Get vocabulary for a level + selected source (list). */
 export function getVocabularyForSource(
-  level: 3 | 4 | 5,
+  level: Level,
   source: VocabSource
 ): VocabularyWord[] {
   return filterBySource(getVocabularyForLevel(level), source);
 }
 
 /** Get vocabulary filtered by unit and level */
-export function getVocabularyByUnit(unit: number, level: 3 | 4 | 5): VocabularyWord[] {
+export function getVocabularyByUnit(unit: number, level: Level): VocabularyWord[] {
   return VOCABULARY.filter((v) => v.unit === unit && v.minLevel <= level);
 }
 
 /** Total counts per unit (for the dashboard) */
-export function getUnitStats(level: 3 | 4 | 5) {
-  // Units 1-6 = רשימת המורה (B1-B6); 7-11 = רשימות משרד החינוך (Bands A-D)
-  const allUnits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+export function getUnitStats(level: Level) {
+  // Units 1-6 = רשימת המורה (B1-B6); 7-11 = משרד החינוך (Bands A-D); 12 = אוניברסיטה
+  const allUnits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   return allUnits
     .map((unit) => ({
       unit,

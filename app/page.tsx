@@ -9,7 +9,7 @@ import {
   getVocabularyForLevel,
   getUnitStats,
 } from "@/data/vocabulary";
-import { VOCAB_SOURCES } from "@/lib/types";
+import { VOCAB_SOURCES, levelLabel } from "@/lib/types";
 
 const games = [
   {
@@ -91,6 +91,7 @@ function DashboardInner() {
     "band-b": allWords.filter((w) => w.unit === 8).length,
     "band-c": allWords.filter((w) => w.unit === 9 || w.unit === 10).length,
     "band-d": allWords.filter((w) => w.unit === 11).length,
+    university: allWords.filter((w) => w.unit === 12).length,
     all: allWords.length,
   };
 
@@ -107,7 +108,8 @@ function DashboardInner() {
                 שלום, {activeProfile.name}! 👋
               </h1>
               <p className="text-slate-600 mt-1">
-                רמה: {activeProfile.level} יחידות · מודול E
+                רמה: {levelLabel(activeProfile.level)}
+                {activeProfile.level !== 6 && " · מודול E"}
               </p>
             </div>
           </div>
@@ -231,7 +233,9 @@ function DashboardInner() {
               };
               const ministryLabels = ["A", "B", "C", "C+", "D"];
               const label =
-                u.unit <= 6
+                u.unit === 12
+                  ? { top: "🎓 אקדמי", main: "אונ'" }
+                  : u.unit <= 6
                   ? teacherLabels[u.unit]
                   : { top: "Band", main: ministryLabels[u.unit - 7] || `${u.unit}` };
               return (

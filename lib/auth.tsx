@@ -79,9 +79,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (saved) {
       setCurrentSourceState(saved as VocabSource);
     } else {
-      setCurrentSourceState("teacher"); // default for new profiles
+      // default per track: university profiles start on their own word list
+      const prof = profiles.find((p) => p.id === activeId);
+      setCurrentSourceState(prof?.level === 6 ? "university" : "teacher");
     }
-  }, [activeId]);
+  }, [activeId, profiles]);
 
   const setCurrentSource = (source: VocabSource) => {
     setCurrentSourceState(source);

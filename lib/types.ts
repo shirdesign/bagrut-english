@@ -10,7 +10,29 @@ export type PartOfSpeech =
   | "pron"
   | "phrase";
 
-export type Level = 3 | 4 | 5;
+/**
+ * Study level.
+ * 3/4/5 = yehidot (matriculation units) for Module E.
+ * 6 = "אנגלית בסיסי לאוניברסיטה" (basic English for university) — a separate
+ * track with its own word list, kept numeric so all `minLevel <= level`
+ * filtering keeps working. Use `levelLabel()` for any user-facing text.
+ */
+export type Level = 3 | 4 | 5 | 6;
+
+/** University track level constant (internal numeric value). */
+export const UNIVERSITY_LEVEL: Level = 6;
+
+/** Human-readable label for a level (never show the raw 6 to the user). */
+export function levelLabel(level: Level): string {
+  return level === UNIVERSITY_LEVEL
+    ? "אנגלית בסיסי לאוניברסיטה"
+    : `${level} יחידות`;
+}
+
+/** Short badge label for a level (for tight spaces like the header). */
+export function levelBadge(level: Level): string {
+  return level === UNIVERSITY_LEVEL ? "🎓 אונ'" : `${level}`;
+}
 
 export interface VocabularyWord {
   /** unique stable id */
@@ -108,9 +130,11 @@ export type VocabSource =
   | "band-a"     // משרד החינוך — Band A
   | "band-b"     // משרד החינוך — Band B
   | "band-c"     // משרד החינוך — Band C
-  | "band-d";    // משרד החינוך — Band D
+  | "band-d"     // משרד החינוך — Band D
+  | "university"; // אנגלית בסיסי לאוניברסיטה — רשימת 100 המילים למבחן
 
 export const VOCAB_SOURCES: { id: VocabSource; label: string; emoji: string }[] = [
+  { id: "university", label: "אוניברסיטה — 100 מילים למבחן", emoji: "🎓" },
   { id: "teacher", label: "רשימת המורה (A1-A6 + B1-B6)", emoji: "📘" },
   { id: "band-a", label: "Band A — בסיס", emoji: "🅰️" },
   { id: "band-b", label: "Band B — בסיס+", emoji: "🅱️" },

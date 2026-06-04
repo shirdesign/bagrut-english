@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import type { Level } from "@/lib/types";
+import { levelLabel } from "@/lib/types";
 import Header from "@/components/Header";
 
 const AVATARS = ["🦊", "🐱", "🐶", "🐼", "🦁", "🐯", "🐸", "🐵", "🦄", "🐧", "🦉", "🐝"];
@@ -83,7 +84,7 @@ export default function ProfilePage() {
                 <div className="flex-1">
                   <div className="font-bold text-lg">{p.name}</div>
                   <div className="text-sm text-slate-500">
-                    {p.level} יחידות · {Object.values(p.progress).filter(x => x.known).length} מילים ידועות
+                    {levelLabel(p.level)} · {Object.values(p.progress).filter(x => x.known).length} מילים ידועות
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
@@ -162,7 +163,7 @@ export default function ProfilePage() {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                רמת בגרות
+                רמה
               </label>
               <div className="grid grid-cols-3 gap-2">
                 {[3, 4, 5].map((l) => (
@@ -180,10 +181,22 @@ export default function ProfilePage() {
                   </button>
                 ))}
               </div>
+              <button
+                type="button"
+                onClick={() => setLevel(6 as Level)}
+                className={`w-full mt-2 py-3 rounded-xl border-2 font-bold transition ${
+                  level === 6
+                    ? "border-primary-500 bg-primary-50 text-primary-700"
+                    : "border-slate-200 text-slate-600 hover:border-slate-300"
+                }`}
+              >
+                🎓 אנגלית בסיסי לאוניברסיטה
+              </button>
               <p className="text-xs text-slate-500 mt-2">
                 {level === 3 && "רמת בסיס"}
                 {level === 4 && "רמת ביניים - הפורמט הנפוץ למודול E"}
                 {level === 5 && "רמה גבוהה - כולל מילים מתקדמות וקטעים ארוכים יותר"}
+                {level === 6 && "מסלול אקדמי - רשימת 100 מילים למבחן, קריאה, תרגום ותרגול אנסין"}
               </p>
             </div>
 
