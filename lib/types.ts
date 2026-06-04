@@ -134,7 +134,7 @@ export type VocabSource =
   | "university"; // אנגלית בסיסי לאוניברסיטה — רשימת 100 המילים למבחן
 
 export const VOCAB_SOURCES: { id: VocabSource; label: string; emoji: string }[] = [
-  { id: "university", label: "אוניברסיטה — 100 מילים למבחן", emoji: "🎓" },
+  { id: "university", label: "אוניברסיטה — 110 מילים למבחן", emoji: "🎓" },
   { id: "teacher", label: "רשימת המורה (A1-A6 + B1-B6)", emoji: "📘" },
   { id: "band-a", label: "Band A — בסיס", emoji: "🅰️" },
   { id: "band-b", label: "Band B — בסיס+", emoji: "🅱️" },
